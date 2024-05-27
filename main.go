@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -17,8 +18,14 @@ type WeatherInfo struct {
 }
 
 func getLocation(zipCode string) (string, error) {
+	tr := &http.Transport{
+        TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+    }
+    client := &http.Client{Transport: tr}
 	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json/", zipCode)
-	resp, err := http.Get(url)
+	resp, err := client.Get(url)
+	fmt.Println("StatusCode:", resp)
+	fmt.Println("err:", err)
 	if err != nil {
 		return "", err
 	}
@@ -33,9 +40,15 @@ func getLocation(zipCode string) (string, error) {
 }
 
 func getWeather(city string) (WeatherInfo, error) {
+	tr := &http.Transport{
+        TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+    }
+    client := &http.Client{Transport: tr}
 	encodedCity := url.QueryEscape(city)
 	completeUrl := fmt.Sprintf("https://api.weatherapi.com/v1/current.json?key=6c0e6aefacc44ed0a69130616242705&q=%s", encodedCity)
-	resp, err := http.Get(completeUrl)
+	resp, err := client.Get(completeUrl)
+	fmt.Println("StatusCode:", resp)
+	fmt.Println("err:", err)
 	if err != nil {
 		return WeatherInfo{}, err
 	}
@@ -81,6 +94,8 @@ func temperatureHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+
+
 
 func main() {
 	http.HandleFunc("/temperature", temperatureHandler)
