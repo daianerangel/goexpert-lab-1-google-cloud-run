@@ -14,7 +14,9 @@ type LocationInfo struct {
 }
 
 type WeatherInfo struct {
-	Temperature float64 `json:"temp_c"`
+    Current struct {
+        Temperature            float64 `json:"temp_c"`
+    } `json:"current"`
 }
 
 func getLocation(zipCode string) (string, error) {
@@ -81,7 +83,7 @@ func temperatureHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tempC := weather.Temperature
+	tempC := weather.Current.Temperature
 	tempF := tempC*1.8 + 32
 	tempK := tempC + 273
 
