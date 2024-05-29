@@ -97,8 +97,6 @@ func temperatureHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-
-
 func main() {
 	http.HandleFunc("/temperature", temperatureHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
