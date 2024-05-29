@@ -1,15 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
 
 
 func TestTemperatureHandlerSuccess(t *testing.T) {
 
-	req, err := http.NewRequest("GET", "/temperature?zipcode=10001", nil)
+	req, err := http.NewRequest("GET", "/temperature?zipcode=23093010", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,9 +25,19 @@ func TestTemperatureHandlerSuccess(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	expected := `{"temp_C":28.5,"temp_F":83.3,"temp_K":301.65}`
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	var response map[string]float64
+	if err := json.NewDecoder(rr.Body).Decode(&response); err != nil {
+		t.Fatalf("could not decode response: %v", err)
+	}
+
+	expectedResponse := map[string]float64{
+		"temp_C": 22,
+		"temp_F": 71.6,
+		"temp_K": 295,
+	}
+
+	if !reflect.DeepEqual(response, expectedResponse){
+		t.Errorf("handler returned unexpected body: got %v want %v", response, expectedResponse)
 	}
 }
 
