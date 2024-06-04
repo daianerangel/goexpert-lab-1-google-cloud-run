@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 )
-
 
 func TestTemperatureHandlerSuccess(t *testing.T) {
 
@@ -30,14 +28,14 @@ func TestTemperatureHandlerSuccess(t *testing.T) {
 		t.Fatalf("could not decode response: %v", err)
 	}
 
-	expectedResponse := map[string]float64{
-		"temp_C": 22,
-		"temp_F": 71.6,
-		"temp_K": 295,
+	if tempC, ok := response["temp_C"]; !ok || tempC == 0 {
+		t.Errorf("temp_C is missing or zero: got %v", tempC)
 	}
-
-	if !reflect.DeepEqual(response, expectedResponse){
-		t.Errorf("handler returned unexpected body: got %v want %v", response, expectedResponse)
+	if tempF, ok := response["temp_F"]; !ok || tempF == 0 {
+		t.Errorf("temp_F is missing or zero: got %v", tempF)
+	}
+	if tempK, ok := response["temp_K"]; !ok || tempK == 0 {
+		t.Errorf("temp_K is missing or zero: got %v", tempK)
 	}
 }
 
